@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{parse::Parse, parse_macro_input, token::Paren, Ident, Path, Token};
@@ -48,11 +50,16 @@ pub fn event_bus(attr: TokenStream, _item: TokenStream) -> TokenStream {
 
     let mut fields = vec![];
     let mut defaults = vec![];
+    let mut event_types: HashSet<Ident> = HashSet::new();
 
     for service in input.services {
         let service_type = service.service_type;
         let field_name = to_snake_case(&service_type);
         let field_ident = format_ident!("{field_name}");
+
+        event_types.insert(service.event_in);
+        event_types.insert(service.event_out);
+
         fields.push(quote! {
             #field_ident: #service_type
         });
@@ -61,7 +68,7 @@ pub fn event_bus(attr: TokenStream, _item: TokenStream) -> TokenStream {
         })
     }
 
-    let expanded = quote! {
+    let expanded_struct = quote! {
         pub struct EventBus{
             #(#fields),*
         }
@@ -73,6 +80,26 @@ pub fn event_bus(attr: TokenStream, _item: TokenStream) -> TokenStream {
                 }
             }
         }
+    };
+
+    let event_variants: Vec<_> = event_types
+        .iter()
+        .map(|event_type| {
+            quote! {
+                #event_type(#event_type)
+            }
+        })
+        .collect();
+
+    let expanded_enum = quote! {
+        pub enum AnyEvent{
+            #(#event_variants),*
+        }
+    };
+
+    let expanded = quote! {
+        #expanded_struct
+        #expanded_enum
     };
 
     TokenStream::from(expanded)
