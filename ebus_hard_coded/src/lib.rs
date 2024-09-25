@@ -28,8 +28,10 @@ impl EventBus {
         Default::default()
     }
 
-    pub fn run(self, event: EventOne) {
-        let mut current = AnyEvent::EventOne(event);
+    pub fn run(self, start_event: AnyEvent) {
+        // need some logic to start the thing up and introduce external events,
+        // but let's ignore that right now
+        let mut current = start_event;
 
         loop {
             current = self.process_event(current);
@@ -54,7 +56,7 @@ impl EventBus {
     }
 }
 
-enum AnyEvent {
+pub enum AnyEvent {
     EventOne(EventOne),
     EventTwo(EventTwo),
     EventThree(EventThree),
