@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{parse::Parse, parse_macro_input, token::Paren, Ident, Path, Token};
+use syn::{parse::Parse, parse_macro_input, token::Paren, Ident, Token};
 
 ///
 /// Info provided per one service

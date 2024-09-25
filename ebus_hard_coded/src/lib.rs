@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::VecDeque, time::Duration};
 
 use events::{EventOne, EventThree, EventTwo};
 use service_one::ServiceOne;
@@ -21,6 +21,7 @@ pub struct EventBus {
     service_one: ServiceOne,
     service_two: ServiceTwo,
     service_three: ServiceThree,
+    event_queue: VecDeque<AnyEvent>,
 }
 
 impl EventBus {
@@ -28,18 +29,21 @@ impl EventBus {
         Default::default()
     }
 
-    pub fn run(self, start_event: AnyEvent) {
+    pub fn run(mut self, start_events: Vec<AnyEvent>) {
         // need some logic to start the thing up and introduce external events,
         // but let's ignore that right now
-        let mut current = start_event;
+        self.event_queue.extend(start_events);
 
         loop {
-            current = self.process_event(current);
+            // we would rather async wait when queue empty (also need like a way of adding events during
+            // runtime - ignoring all of that)
+            let current_event = self.event_queue.pop_front().expect("queue empty");
+            self.process_event(current_event);
             std::thread::sleep(Duration::from_secs(1));
         }
     }
-    fn process_event(&self, event: AnyEvent) -> AnyEvent {
-        match event {
+    fn process_event(&mut self, event: AnyEvent) {
+        let added_event = match event {
             AnyEvent::EventOne(event_one) => {
                 let event = self.service_one.process(event_one);
                 AnyEvent::EventTwo(event)
@@ -52,7 +56,8 @@ impl EventBus {
                 let event = self.service_three.process(event_three);
                 AnyEvent::EventOne(event)
             }
-        }
+        };
+        self.event_queue.push_back(added_event);
     }
 }
 
