@@ -1,0 +1,10 @@
+[package]
+name = "ebus_hard_coded"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+events = { path = "../events" }
+service-one = { path = "../service-one" }
+service-two = { path = "../service-two" }
+service-three = { path = "../service-three" }

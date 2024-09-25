@@ -1,16 +1,9 @@
 use std::time::Duration;
 
-use events::{EventThree, EventTwo};
+use events::{EventOne, EventThree, EventTwo};
 use service_one::ServiceOne;
+use service_three::ServiceThree;
 use service_two::ServiceTwo;
-use sevice_three::ServiceThree;
-
-mod events;
-mod service_one;
-mod service_two;
-mod sevice_three;
-
-pub use events::EventOne;
 
 ///
 /// So, in general we would want to be able to express that we consume/subscribe to

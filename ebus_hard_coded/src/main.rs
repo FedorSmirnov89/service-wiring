@@ -1,4 +1,5 @@
-use target_structure::{EventBus, EventOne};
+use ebus_hard_coded::EventBus;
+use events::EventOne;
 
 fn main() {
     let event_bus = EventBus::default();

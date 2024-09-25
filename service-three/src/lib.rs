@@ -1,10 +1,10 @@
-use crate::events::{EventOne, EventThree};
+use events::{EventOne, EventThree};
 
 #[derive(Default)]
-pub(crate) struct ServiceThree {}
+pub struct ServiceThree {}
 
 impl ServiceThree {
-    pub(crate) fn process(&self, event: EventThree) -> EventOne {
+    pub fn process(&self, event: EventThree) -> EventOne {
         let EventThree { count } = event;
         println!("service three doing stuff; Current count: {count}");
         EventOne {
