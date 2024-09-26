@@ -48,6 +48,7 @@ dependencies = [
 name = "service-one"
 version = "0.1.0"
 dependencies = [
+ "ebus_macro",
  "events",
 ]
 
@@ -55,6 +56,7 @@ dependencies = [
 name = "service-three"
 version = "0.1.0"
 dependencies = [
+ "ebus_macro",
  "events",
 ]
 
@@ -62,6 +64,7 @@ dependencies = [
 name = "service-two"
 version = "0.1.0"
 dependencies = [
+ "ebus_macro",
  "events",
 ]
 

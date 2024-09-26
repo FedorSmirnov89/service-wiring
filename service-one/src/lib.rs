@@ -5,6 +5,7 @@ use events::{EventOne, EventTwo};
 #[derive(Default)]
 pub struct ServiceOne {}
 
+#[ebus_macro::service_input]
 pub enum Input {
     EventOne(EventOne),
 }

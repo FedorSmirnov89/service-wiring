@@ -43,21 +43,22 @@ impl EventBus {
         }
     }
     fn process_event(&mut self, event: AnyEvent) {
-        let added_event = match event {
+        match event {
             AnyEvent::EventOne(event_one) => {
-                let event = self.service_one.process(event_one);
-                AnyEvent::EventTwo(event)
+                let event = self.service_one.process(event_one.into()).into();
+                self.event_queue.push_back(event);
             }
             AnyEvent::EventTwo(event_two) => {
-                let event = self.service_two.process(event_two);
-                AnyEvent::EventThree(event)
+                let event = self.service_two.process(event_two.clone().into()).into();
+                self.event_queue.push_back(event);
+                let event = self.service_three.process(event_two.clone().into()).into();
+                self.event_queue.push_back(event);
             }
             AnyEvent::EventThree(event_three) => {
-                let event = self.service_three.process(event_three);
-                AnyEvent::EventOne(event)
+                let event = self.service_two.process(event_three.into()).into();
+                self.event_queue.push_back(event);
             }
         };
-        self.event_queue.push_back(added_event);
     }
 }
 
@@ -65,4 +66,27 @@ pub enum AnyEvent {
     EventOne(EventOne),
     EventTwo(EventTwo),
     EventThree(EventThree),
+}
+
+impl From<service_one::Output> for AnyEvent {
+    fn from(value: service_one::Output) -> Self {
+        match value {
+            service_one::Output::EventTwo(event) => AnyEvent::EventTwo(event),
+        }
+    }
+}
+
+impl From<service_two::Output> for AnyEvent {
+    fn from(value: service_two::Output) -> Self {
+        match value {
+            service_two::Output::EventOne(event) => AnyEvent::EventOne(event),
+        }
+    }
+}
+impl From<service_three::Output> for AnyEvent {
+    fn from(value: service_three::Output) -> Self {
+        match value {
+            service_three::Output::EventThree(event) => AnyEvent::EventThree(event),
+        }
+    }
 }
