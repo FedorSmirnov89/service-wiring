@@ -1,6 +1,9 @@
 //! Defines the data used for the generation of the macro code.
 
-use std::{collections::HashSet, fmt::Debug};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Debug,
+};
 
 use syn::{Ident, Path};
 
@@ -8,6 +11,7 @@ use syn::{Ident, Path};
 pub(super) struct WiringData {
     pub(super) services: Vec<ServiceData>,
     pub(super) events: HashSet<Ident>,
+    pub(super) in_event_consumers: HashMap<Ident, Vec<String>>,
 }
 
 #[derive(Clone)]
@@ -16,7 +20,6 @@ pub(super) struct ServiceData {
     pub(super) field_name: String,
     pub(super) path: Path,
     pub(super) out_events: Vec<Ident>,
-    pub(super) in_events: Vec<Ident>,
 }
 
 impl Debug for ServiceData {

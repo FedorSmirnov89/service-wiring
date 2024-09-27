@@ -89,17 +89,21 @@ impl From<EbusMacroInput> for WiringData {
     fn from(value: EbusMacroInput) -> Self {
         let mut services = vec![];
         let mut events = HashSet::new();
+        let mut in_event_consumers = HashMap::new();
 
         for service in value.services {
             let type_name = service.service_type.clone();
             let field_name = to_snake_case(&type_name);
             let path = service.service_path;
-            let mut in_events = vec![];
             let mut out_events = vec![];
 
             for in_event in &service.in_events {
                 events.insert(in_event.clone());
-                in_events.push(in_event.clone());
+
+                in_event_consumers
+                    .entry(in_event.clone())
+                    .or_insert_with(Vec::new)
+                    .push(field_name.clone());
             }
 
             for out_event in &service.out_events {
@@ -111,14 +115,17 @@ impl From<EbusMacroInput> for WiringData {
                 type_name,
                 field_name,
                 path,
-                in_events,
                 out_events,
             };
 
             services.push(service_data);
         }
 
-        Self { services, events }
+        Self {
+            services,
+            events,
+            in_event_consumers,
+        }
     }
 }
 
