@@ -1,6 +1,8 @@
 //! Specifies the logic used for the parsing of the `event_bus` macro annotation
 //! as well as how the info there is converted to the data used for the macro generation
 
+use std::collections::HashSet;
+
 use syn::{parse::Parse, punctuated::Punctuated, Ident, Path, Token};
 
 use crate::event_bus::data::ServiceData;
@@ -86,11 +88,20 @@ impl Parse for EbusMacroInput {
 impl From<EbusMacroInput> for WiringData {
     fn from(value: EbusMacroInput) -> Self {
         let mut services = vec![];
+        let mut events = HashSet::new();
 
         for service in value.services {
             let type_name = service.service_type.clone();
             let field_name = to_snake_case(&type_name);
             let path = service.service_path;
+
+            for in_event in &service.in_events{
+                events.insert(in_event.clone());
+            }
+
+            for out_event in &service.out_events{
+                events.insert(out_event.clone());
+            }
 
             let service_data = ServiceData {
                 type_name,
@@ -101,7 +112,7 @@ impl From<EbusMacroInput> for WiringData {
             services.push(service_data);
         }
 
-        Self { services }
+        Self { services, events }
     }
 }
 

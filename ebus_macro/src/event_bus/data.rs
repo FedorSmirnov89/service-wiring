@@ -1,12 +1,13 @@
 //! Defines the data used for the generation of the macro code.
 
-use std::fmt::Debug;
+use std::{collections::HashSet, fmt::Debug};
 
 use syn::{Ident, Path};
 
 #[derive(Debug)]
 pub(super) struct WiringData {
     pub(super) services: Vec<ServiceData>,
+    pub(super) events: HashSet<Ident>,
 }
 
 pub(super) struct ServiceData {
