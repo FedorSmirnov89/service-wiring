@@ -1,6 +1,11 @@
 //! Specifies the logic used for the parsing of the `event_bus` macro annotation
+//! as well as how the info there is converted to the data used for the macro generation
 
 use syn::{parse::Parse, punctuated::Punctuated, Ident, Path, Token};
+
+use crate::event_bus::data::ServiceData;
+
+use super::data::WiringData;
 
 ///
 /// Info annotated per service
@@ -76,4 +81,42 @@ impl Parse for EbusMacroInput {
             services: input.parse_terminated(ServiceEntry::parse, Token![,])?,
         })
     }
+}
+
+impl From<EbusMacroInput> for WiringData {
+    fn from(value: EbusMacroInput) -> Self {
+        let mut services = vec![];
+
+        for service in value.services {
+            let type_name = service.service_type.clone();
+            let field_name = to_snake_case(&type_name);
+            let path = service.service_path;
+
+            let service_data = ServiceData {
+                type_name,
+                field_name,
+                path,
+            };
+
+            services.push(service_data);
+        }
+
+        Self { services }
+    }
+}
+
+fn to_snake_case(ident: &Ident) -> String {
+    let ident = ident.to_string();
+    let mut snake_case = String::new();
+    for (i, c) in ident.chars().enumerate() {
+        if c.is_uppercase() {
+            if i > 0 {
+                snake_case.push('_');
+            }
+            snake_case.push(c.to_ascii_lowercase());
+        } else {
+            snake_case.push(c);
+        }
+    }
+    snake_case
 }

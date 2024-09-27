@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use data::WiringData;
+use expansion::expand_wiring_logic;
 use parsing::EbusMacroInput;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
@@ -7,18 +9,18 @@ use syn::{
     parse::Parse, parse_macro_input, punctuated::Punctuated, token::Token, Ident, Path, Token,
 };
 
+mod data;
+mod expansion;
 mod parsing;
 
 pub fn event_bus_function(attr: TokenStream, _item: TokenStream) -> TokenStream {
     // parse the attributes passed to the macro (the services to add into the bus)
     let input = parse_macro_input!(attr as EbusMacroInput);
-
-    let other_expanded = quote! {
-        struct EventBus{}
-        // #exp_path
-    };
-
-    TokenStream::from(other_expanded)
+    let data: WiringData = input.into();
+    eprintln!("DEBUGGING");
+    eprintln!("{data:?}");
+    eprintln!("DEBUGGING");
+    expand_wiring_logic(data)
 
     // let mut service_entries = vec![];
 
@@ -151,20 +153,4 @@ pub fn event_bus_function(attr: TokenStream, _item: TokenStream) -> TokenStream 
     // };
 
     // TokenStream::from(expanded)
-}
-
-fn to_snake_case(ident: &Ident) -> String {
-    let ident = ident.to_string();
-    let mut snake_case = String::new();
-    for (i, c) in ident.chars().enumerate() {
-        if c.is_uppercase() {
-            if i > 0 {
-                snake_case.push('_');
-            }
-            snake_case.push(c.to_ascii_lowercase());
-        } else {
-            snake_case.push(c);
-        }
-    }
-    snake_case
 }
