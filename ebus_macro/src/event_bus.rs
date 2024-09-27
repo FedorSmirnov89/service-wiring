@@ -17,9 +17,9 @@ pub fn event_bus_function(attr: TokenStream, _item: TokenStream) -> TokenStream 
     // parse the attributes passed to the macro (the services to add into the bus)
     let input = parse_macro_input!(attr as EbusMacroInput);
     let data: WiringData = input.into();
-    eprintln!("DEBUGGING");
-    eprintln!("{data:?}");
-    eprintln!("DEBUGGING");
+    // eprintln!("DEBUGGING");
+    // eprintln!("{data:?}");
+    // eprintln!("DEBUGGING");
     expand_wiring_logic(data)
 
     // let mut service_entries = vec![];

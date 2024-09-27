@@ -1,7 +1,7 @@
 //! Specifies the logic used for the parsing of the `event_bus` macro annotation
 //! as well as how the info there is converted to the data used for the macro generation
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use syn::{parse::Parse, punctuated::Punctuated, Ident, Path, Token};
 
@@ -94,19 +94,25 @@ impl From<EbusMacroInput> for WiringData {
             let type_name = service.service_type.clone();
             let field_name = to_snake_case(&type_name);
             let path = service.service_path;
+            let mut in_events = vec![];
+            let mut out_events = vec![];
 
-            for in_event in &service.in_events{
+            for in_event in &service.in_events {
                 events.insert(in_event.clone());
+                in_events.push(in_event.clone());
             }
 
-            for out_event in &service.out_events{
+            for out_event in &service.out_events {
                 events.insert(out_event.clone());
+                out_events.push(out_event.clone());
             }
 
             let service_data = ServiceData {
                 type_name,
                 field_name,
                 path,
+                in_events,
+                out_events,
             };
 
             services.push(service_data);

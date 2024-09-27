@@ -10,10 +10,13 @@ pub(super) struct WiringData {
     pub(super) events: HashSet<Ident>,
 }
 
+#[derive(Clone)]
 pub(super) struct ServiceData {
     pub(super) type_name: Ident,
     pub(super) field_name: String,
     pub(super) path: Path,
+    pub(super) out_events: Vec<Ident>,
+    pub(super) in_events: Vec<Ident>,
 }
 
 impl Debug for ServiceData {
